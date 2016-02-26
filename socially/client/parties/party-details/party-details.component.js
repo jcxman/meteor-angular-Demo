@@ -8,10 +8,15 @@ angular.module('socially').directive('partyDetails', function () {
         controllerAs: 'partyDetails',
         controller: function ($scope, $stateParams,$reactive) {
             $reactive(this).attach($scope);
+            this.subscribe('parties');
+            this.subscribe('users');
 
             this.helpers({
                 party: function(){
                     return Parties.findOne({ _id : $stateParams.partyId });
+                },
+                users:function(){
+                    return Meteor.users.find({});
                 }
             });
 
@@ -19,7 +24,8 @@ angular.module('socially').directive('partyDetails', function () {
                 Parties.update({_id: $stateParams.partyId}, {
                     $set: {
                         name: this.party.name,
-                        description: this.party.description
+                        description: this.party.description,
+                        'public': this.party.public
                     }
                 },function(error){
                     if(error){

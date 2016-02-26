@@ -9,12 +9,16 @@ angular.module('socially').directive('partiesList', function() {
         controller: function($scope, $reactive) {
             $reactive(this).attach($scope);
             this.newParty = {};
+
+            this.subscribe('parties');
+
             this.helpers({
                 parties: function() {
                     return Parties.find({});
                 }
             });
             this.addParty = function(){
+                this.newParty.owner = Meteor.user()._id;
                 Parties.insert(this.newParty);
                 this.newParty = {};
             };
