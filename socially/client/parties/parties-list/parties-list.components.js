@@ -31,6 +31,9 @@ angular.module('socially').directive('partiesList', function() {
                     name: parseInt(this.orderProperty)
                 }
             };
+
+            this.subscribe('users');
+
             this.subscribe('parties',function(){
                return [
                    {
@@ -55,6 +58,24 @@ angular.module('socially').directive('partiesList', function() {
             this.pageChanged = function(newPage){
                 this.page = newPage;
             };
+
+            this.getPartyCreator = function(party){
+                if(!party){
+                    return '';
+                }
+
+                owner = Meteor.users.findOne(party.owner);
+
+                if(!owner){
+                    return 'nobody';
+                }
+
+                if(Meteor.userId() !== null && owner._id === Meteor.userId()){
+                    return 'me';
+                }
+
+                return owner;
+            }
         }
     }
 });
