@@ -9,14 +9,39 @@ angular.module('socially').directive('partiesList', function() {
         controller: function($scope, $reactive) {
             $reactive(this).attach($scope);
             this.newParty = {};
-
-            this.subscribe('parties');
+            this.perPage = 3;
+            this.page = 1;
+            this.sort = {
+                name: 1
+            };
+            this.orderProperty = '1';
+            this.searchText = '';
 
             this.helpers({
                 parties: function() {
-                    return Parties.find({});
+                    return Parties.find({}, { sort : this.getReactively('sort') });
+                },
+                partiesCount: function(){
+                    return Counts.get('numberOfParties');
                 }
             });
+
+            this.updateSort = function(){
+                this.sort = {
+                    name: parseInt(this.orderProperty)
+                }
+            };
+            this.subscribe('parties',function(){
+               return [
+                   {
+                       limit: parseInt(this.perPage),
+                       skip: parseInt((this.getReactively('page')-1) * this.perPage),
+                       sort: this.getReactively('sort')
+                   },
+                   this.getReactively('searchText')
+               ]
+            });
+
             this.addParty = function(){
                 this.newParty.owner = Meteor.user()._id;
                 Parties.insert(this.newParty);
@@ -25,7 +50,11 @@ angular.module('socially').directive('partiesList', function() {
 
             this.removeParty = function(party){
                 Parties.remove({_id: party._id});
-            }
+            };
+
+            this.pageChanged = function(newPage){
+                this.page = newPage;
+            };
         }
     }
 });

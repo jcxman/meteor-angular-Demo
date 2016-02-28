@@ -15,8 +15,15 @@ Parties.allow({
     }
 });
 
-Meteor.publish("parties", function () {
-    return Parties.find({
+Meteor.publish("parties", function (options,searchString) {
+    if (!searchString || searchString == null) {
+        searchString = '';
+    }
+
+    //return Parties.find({
+    selector = {
+        name: { '$regex' : '.*' + searchString || '' + '.*', '$options' : 'i' },
+
         $or: [
             {
                 $and: [
@@ -31,5 +38,9 @@ Meteor.publish("parties", function () {
                 ]
             }
         ]
-    });
+    //},options);
+    };
+
+    Counts.publish(this, 'numberOfParties', Parties.find(selector), {noReady: true});
+    return Parties.find(selector, options);
 });
