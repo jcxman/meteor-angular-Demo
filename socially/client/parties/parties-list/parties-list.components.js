@@ -21,6 +21,9 @@ angular.module('socially').directive('partiesList', function() {
                 parties: function() {
                     return Parties.find({}, { sort : this.getReactively('sort') });
                 },
+                users: function(){
+                    return Meteor.users.find({});
+                },
                 partiesCount: function(){
                     return Counts.get('numberOfParties');
                 }
@@ -75,7 +78,27 @@ angular.module('socially').directive('partiesList', function() {
                 }
 
                 return owner;
-            }
+            };
+            this.rsvp = function(partyId, rsvp) {
+                Meteor.call('rsvp', partyId, rsvp, function(error){
+                    if (error) {
+                        console.log('Oops, unable to rsvp!');
+                    }
+                    else {
+                        console.log('RSVP Done!');
+                    }
+                });
+            };
+
+            this.getUserById = function(userId) {
+                return Meteor.users.findOne(userId);
+            };
+
+            this.outstandingInvitations = function(party){
+                return _.filter(this.users, function(user) {
+                        return (_.contains(party.invited, user._id) && !_.findWhere(party.rsvps, {user: user._id}));
+                });
+            };
         }
     }
 });
