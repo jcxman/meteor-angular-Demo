@@ -26,6 +26,12 @@ angular.module('socially').directive('partiesList', function() {
                 },
                 partiesCount: function(){
                     return Counts.get('numberOfParties');
+                },
+                isLoggedIn: function(){
+                    return Meteor.userId() !== null;
+                },
+                currentUserId: function(){
+                    return Meteor.userId();
                 }
             });
 
@@ -99,6 +105,7 @@ angular.module('socially').directive('partiesList', function() {
                         return (_.contains(party.invited, user._id) && !_.findWhere(party.rsvps, {user: user._id}));
                 });
             };
+
         }
     }
 });

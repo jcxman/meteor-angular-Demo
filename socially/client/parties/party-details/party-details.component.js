@@ -17,6 +17,9 @@ angular.module('socially').directive('partyDetails', function () {
                 },
                 users:function(){
                     return Meteor.users.find({});
+                },
+                isLoggedIn: function(){
+                    return Meteor.userId() !== null;
                 }
             });
 
@@ -46,6 +49,13 @@ angular.module('socially').directive('partyDetails', function () {
                         console.log('Invited!');
                     }
                 });
+            };
+
+            this.canInvite = function(){
+                if (!this.party)
+                    return false;
+
+                return !this.party.public && this.party.owner === Meteor.userId();
             };
         }
     }
