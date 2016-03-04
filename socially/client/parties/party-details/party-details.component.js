@@ -20,6 +20,9 @@ angular.module('socially').directive('partyDetails', function () {
                 },
                 isLoggedIn: function(){
                     return Meteor.userId() !== null;
+                },
+                currentUserId: function(){
+                    return Meteor.userId();
                 }
             });
 

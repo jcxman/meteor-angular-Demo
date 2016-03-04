@@ -6,7 +6,7 @@ angular.module('socially').directive('partiesList', function() {
         restrict: 'E',
         templateUrl: 'client/parties/parties-list/parties-list.html',
         controllerAs: 'partiesList',
-        controller: function($scope, $reactive) {
+        controller: function($scope, $reactive,$modal) {
             $reactive(this).attach($scope);
             this.newParty = {};
             this.perPage = 3;
@@ -45,6 +45,42 @@ angular.module('socially').directive('partiesList', function() {
                 center: {
                     latitude: 45,
                     longitude: -73
+                },
+                options: {
+                    maxZoom: 10,
+                    styles: [{
+                        "featureType": "administrative",
+                        "elementType": "labels.text.fill",
+                        "stylers": [{"color": "#444444"}]
+                    }, {
+                        "featureType": "landscape",
+                        "elementType": "all",
+                        "stylers": [{"color": "#f2f2f2"}]
+                    }, {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": [{"visibility": "off"}]
+                    }, {
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": [{"saturation": -100}, {"lightness": 45}]
+                    }, {
+                        "featureType": "road.highway",
+                        "elementType": "all",
+                        "stylers": [{"visibility": "simplified"}]
+                    }, {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.icon",
+                        "stylers": [{"visibility": "off"}]
+                    }, {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [{"visibility": "off"}]
+                    }, {
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": [{"color": "#46bcec"}, {"visibility": "on"}]
+                    }]
                 },
                 zoom: 8
             };
@@ -114,6 +150,26 @@ angular.module('socially').directive('partiesList', function() {
                 });
             };
 
+            this.openAddNewPartyModal = function () {
+                $modal.open({
+                    animation: true,
+                    template: '<add-new-party-modal></add-new-party-modal>'
+                });
+            };
+
+            this.isRSVP = function(rsvp, party){
+                if (Meteor.userId() == null) {
+                    return false;
+                }
+
+                var rsvpIndex = party.myRsvpIndex;
+                rsvpIndex = rsvpIndex || _.indexOf(_.pluck(party.rsvps, 'user'), Meteor.userId());
+
+                if (rsvpIndex !== -1) {
+                    party.myRsvpIndex = rsvpIndex;
+                    return party.rsvps[rsvpIndex].rsvp === rsvp;
+                }
+            }
         }
     }
 });
