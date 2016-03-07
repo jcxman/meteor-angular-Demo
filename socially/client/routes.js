@@ -24,6 +24,18 @@ angular.module('socially').config(function ($urlRouterProvider, $stateProvider, 
                     }
                 }
             }
+        })
+        .state('login', {
+            url: '/login',
+            template: '<login></login>'
+        })
+        .state('register', {
+            url: '/register',
+            template: '<register></register>'
+        })
+        .state('resetpw', {
+            url: '/resetpw',
+            template: '<resetpw></resetpw>'
         });
 
 
