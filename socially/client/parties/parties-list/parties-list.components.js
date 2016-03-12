@@ -6,7 +6,7 @@ angular.module('socially').directive('partiesList', function() {
         restrict: 'E',
         templateUrl: 'client/parties/parties-list/parties-list.html',
         controllerAs: 'partiesList',
-        controller: function($scope, $reactive,$mdDialog) {
+        controller: function($scope, $reactive,$mdDialog, $filter) {
             $reactive(this).attach($scope);
             this.newParty = {};
             this.perPage = 3;
@@ -32,8 +32,13 @@ angular.module('socially').directive('partiesList', function() {
                 },
                 currentUserId: function(){
                     return Meteor.userId();
+                },
+                images: function(){
+                    return Images.find({});
                 }
             });
+
+            this.subscribe('images');
 
             this.updateSort = function(){
                 this.sort = {
@@ -169,7 +174,21 @@ angular.module('socially').directive('partiesList', function() {
                     party.myRsvpIndex = rsvpIndex;
                     return party.rsvps[rsvpIndex].rsvp === rsvp;
                 }
-            }
+            };
+
+            this.updateDescription = function($data, image){
+                Images.update({_id: image._id}, {$set: {'metadata.description': $data}});
+            };
+
+            this.getMainImage = function(images) {
+                if (images && images.length && images[0] && images[0]) {
+                    var url = $filter('filter')(this.images, {_id: images[0]})[0].url();
+
+                    return {
+                        'background-image': 'url("' + url + '")'
+                    }
+                }
+            };
         }
     }
 });
